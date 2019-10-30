@@ -305,8 +305,7 @@
                     %{--</div>--}%
                 </div>
             </div>
-        </div>
-
+        </div><!-- End .well -->
         <div class="alert alert-info alert-dismissible" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
                     aria-hidden="true">×</span></button>
@@ -316,6 +315,14 @@
         </div>
     </div><!-- /.col-md-10  -->
 </div><!-- /.row-fuid  -->
+<div class="hidden">
+    <g:form id="hiddenForm" url="[action:'confirm']" method="${requestMethod}" useToken="true">
+        <g:set var="properties" value="${["searchParams","targetUri","downloadType","reasonTypeId","sourceTypeId","downloadFormat","file","layers","customHeader","fileType","layersServiceUrl"]}"/>
+        <g:each in="${properties}" var="prop">
+            <input type="hidden" name="${prop}" id="${prop}" value="${downloadParams[prop]}"/>
+        </g:each>
+    </g:form>
+</div>
 <g:javascript>
     $( document ).ready(function() {
         // click event on download type select buttons
@@ -398,6 +405,7 @@
             var format = $('input[name=downloadFormat]:checked').val();
             var reason = $('#downloadReason').find(":selected").val();
             var file = $('#file').val();
+            var requestMethod = "${requestMethod?:"GET"}";
             //alert("format = " + format);
             if (type) {
                 type = type.replace(/^select-/,''); // remove prefix
@@ -419,15 +427,32 @@
                 if (!reason) {
                     $('#errorAlert').show();
                     $('#downloadReason').focus();
+                } else if (requestMethod == "POST") {
+                    // go to next screen via POST
+                    $('#errorAlert').hide();
+                    // update hidden fields
+                    $('#hiddenForm input#sourceTypeId').val("${downloads.getSourceId()}");
+                    $('#hiddenForm input#layers').val("${defaults.layers}");
+                    $('#hiddenForm input#layersServiceUrl').val("${defaults.layersServiceUrl}");
+                    $('#hiddenForm input#customHeader').val("${defaults.customHeader}");
+                    $('#hiddenForm input#fileType').val($('input[name=fileType]:checked').val());
+                    $('#hiddenForm input#downloadType').val(type);
+                    $('#hiddenForm input#reasonTypeId').val(reason);
+                    $('#hiddenForm input#downloadFormat').val(format);
+                    $('#hiddenForm input#file').val(file);
+                    // submit form
+                    $('#hiddenForm').submit();
                 } else {
-                    // go to next screen
+                    // go to next screen via GET (legacy)
                     $('#errorAlert').hide();
                     var sourceTypeId = "${downloads.getSourceId()}";
                     var layers = "${defaults.layers}";
                     var layersServiceUrl = "${defaults.layersServiceUrl}";
                     var customHeader = "${defaults.customHeader}";
                     var fileType = $('input[name=fileType]:checked').val();
-                    window.location = "${g.createLink(action: 'options2')}?searchParams=${searchParams.encodeAsURL()}&targetUri=${targetUri.encodeAsURL()}&downloadType=" + type + "&reasonTypeId=" + reason + "&sourceTypeId=" + sourceTypeId + "&downloadFormat=" + format + "&file=" + file + "&layers=" + layers + "&customHeader=" + customHeader + "&fileType=" + fileType + "&layersServiceUrl=" + layersServiceUrl;
+                    window.location = "${g.createLink(action: 'confirm')}?searchParams=${searchParams.encodeAsURL()}&targetUri=${targetUri.encodeAsURL()}&downloadType="
+                            + type + "&reasonTypeId=" + reason + "&sourceTypeId=" + sourceTypeId + "&downloadFormat=" + format + "&file=" + file + "&layers="
+                            + layers + "&customHeader=" + customHeader + "&fileType=" + fileType + "&layersServiceUrl=" + layersServiceUrl;
                 }
             } else {
                 $('#errorAlert').show();

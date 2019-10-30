@@ -123,6 +123,14 @@
         ${raw(toolbar)}
 
     </div>
+    <div class="hidden">
+        <g:form id="hiddenForm" url="[action:'confirm']" method="POST" useToken="true">
+            <g:set var="properties" value="${["searchParams","targetUri","downloadType","reasonTypeId","sourceTypeId","downloadFormat","file","layers","customHeader","fileType","layersServiceUrl"]}"/>
+            <g:each in="${properties}" var="prop">
+                <input type="hidden" name="${prop}" id="${prop}" value="${downloadParams[prop]}"/>
+            </g:each>
+        </g:form>
+    </div>
 </div>
 <g:javascript>
     $( document ).ready(function() {
@@ -159,14 +167,32 @@
 
         $('.next-btn').click(function(e) {
             e.preventDefault();
-            var queryString = "${downloadParams?.queryString()}";
-            var fields = [];
-            $('.fieldClass:checked').each(function(i) {
-                fields.push($(this).val());
-            });
-            queryString += '&customClasses=' +fields.join('&customClasses=');
-            //alert("queryString: " + queryString);
-            window.location = "${g.createLink(action:'options2')}" + queryString;
+            var requestMethod = "${request.method?:"GET"}";
+
+            if (requestMethod == "POST") {
+                // go to confirm screen via POST
+                // update hidden fields
+                $('.fieldClass:checked').each(function(i) {
+                    $('<input>', {
+                        type: 'hidden',
+                        name: 'customClasses',
+                        value: $(this).val()
+                    }).appendTo('#hiddenForm');
+                });
+                // submit form
+                //alert("check form");
+                $('#hiddenForm').submit();
+            } else {
+                // legacy GET code
+                var queryString = "${downloadParams?.queryString()}";
+                var fields = [];
+                $('.fieldClass:checked').each(function(i) {
+                    fields.push($(this).val());
+                });
+                queryString += '&customClasses=' +fields.join('&customClasses=');
+                //alert("queryString: " + queryString);
+                window.location = "${g.createLink(action:'confirm')}" + queryString;
+            }
         });
 
         $('.save-btn').click(function(e) {
