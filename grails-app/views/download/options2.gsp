@@ -104,7 +104,7 @@
                                                             <i class="fa  ${(disabled || active)? selectedItem : unselectedItem}"></i>
                                                             <g:message code="customGroup.${group}" default="${group}"/>
                                                             <i class="fa fa-question-circle tooltips" data-group="${group}"
-                                                                   data-content="<downloads:groupHelpHtml fields="${dwcClassesAndTerms.get(group)?.join(', ')}" filter="${groupingsFilterMap.get(group)}" group="${group}"/>"></i>
+                                                                   data-content="<downloads:groupHelpHtml fields="${dwcClassesAndTerms.get(group)}" filter="${groupingsFilterMap.get(group)}" group="${group}"/>"></i>
                                                         </h4>
                                                     </div>
                                                     <div class="clearfix"></div>

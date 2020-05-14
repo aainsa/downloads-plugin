@@ -61,7 +61,7 @@ downloads {
         taxon = "classs:Taxon"
         measurementOrFact = "classs:MeasurementOrFact"
         conservationStatus = ".*Conservation"
-        otherTraits = "species_group|species_subgroup"
+        otherTraits = "species_group%7Cspecies_subgroup%7Cdr15515"
         environmentalLayers = "name:el[0-9]*"
         contextualLayers = "name:cl[0-9]*"
         qualityAssertions = "assertion"
@@ -71,7 +71,7 @@ downloads {
 
 // other field mappings for classes TODO get from biocache-service
 downloads.conservationStatus = ["aust_conservation","state_conservation"]
-downloads.otherTraits = ["species_group","species_subgroup"]
+downloads.otherTraits = ["species_group","species_subgroup","dr15515"]
 downloads.environmentalLayers = ["el_p"]
 downloads.contextualLayers = ["cl_p"]
 //biocache.downloads.extra = "dataResourceUid,dataResourceName.p,occurrenceStatus.p"

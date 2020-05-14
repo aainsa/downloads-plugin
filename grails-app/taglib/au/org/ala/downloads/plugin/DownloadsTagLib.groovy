@@ -195,15 +195,19 @@ class DownloadsTagLib {
     def groupHelpHtml = { attrs ->
         def group = attrs.group
         def filter = attrs.filter
-        def fields = attrs.fields
+        def fields = attrs.fields // changed to a List
         def action = attrs.action ?: "fields"
         def html
-        log.debug "attrs = ${attrs}"
+        log.debug "groupHelpHtml: attrs = ${attrs}"
+        log.debug "groupHelpHtml: filter = ${filter}"
 
         if (filter && fields) {
+            def fieldsString = fields.collect {
+                g.message(code:"downloads.field.${it}", default: it)
+            }.join(", ")
             html =  "<a href='${g.createLink(action: action)}?filter=${filter}' target='_fields'>" +
                     g.message(code:"downloads.fields.group.${group}", default: group) +
-                    " (click for full list of fields)</a> which include: ${fields}"
+                    " (click for full list of fields)</a> which include: ${fieldsString}"
         } else {
             html = g.message(code:"downloads.fields.group.${group}", default: group)
         }
